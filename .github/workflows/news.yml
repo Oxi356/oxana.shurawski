@@ -1,0 +1,42 @@
+# Holt jeden Tag zweimal neue KI-News und veröffentlicht die Website neu.
+name: KI-News aktualisieren
+
+on:
+  schedule:
+    - cron: '0 6 * * *'    # 7 Uhr (Winterzeit), 8 Uhr im Sommer
+    - cron: '0 14 * * *'   # 15 Uhr (Winterzeit), 16 Uhr im Sommer
+  push:
+    branches: [main]       # auch sofort, wenn du etwas hochlädst
+  workflow_dispatch:       # Knopf "Run workflow" zum Testen
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: KI-News holen
+        shell: pwsh
+        env:
+          NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
+        run: ./fetch-news.ps1
+        continue-on-error: true   # klappt die NYT mal nicht, bleiben die letzten News stehen
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
