@@ -40,11 +40,14 @@ foreach ($seite in 0..2) {
     $themen = ($d.keywords | ForEach-Object { $_.value }) -join ' '
     $text = "$($d.headline.main) $($d.abstract) $themen"
     if ($text -match $kiMuster -and $news.Count -lt 8) {
+      # GitHub macht aus dem Datum automatisch ein Datum-Objekt, der Laptop lässt es als Text
+      if ($d.pub_date -is [datetime]) { $datum = $d.pub_date.ToString('dd.MM.') }
+      else { $datum = $d.pub_date.Substring(8, 2) + '.' + $d.pub_date.Substring(5, 2) + '.' }
       $news += [pscustomobject]@{
         title   = $d.headline.main
         url     = $d.web_url
         summary = $d.abstract
-        date    = $d.pub_date.Substring(8, 2) + '.' + $d.pub_date.Substring(5, 2) + '.'
+        date    = $datum
       }
     }
   }

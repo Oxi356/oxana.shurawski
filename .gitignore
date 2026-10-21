@@ -1,0 +1,5 @@
+# Geheime Schlüssel niemals hochladen (auch nicht in den Unterordnern)
+.env
+.env.txt
+# wird aus der .env erzeugt
+config.js
