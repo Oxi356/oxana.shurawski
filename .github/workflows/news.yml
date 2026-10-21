@@ -31,7 +31,7 @@ jobs:
         shell: pwsh
         env:
           NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
-        run: ./fetch-news.ps1
+        run: ./news-widget/fetch-news.ps1
         continue-on-error: true   # klappt die NYT mal nicht, bleiben die letzten News stehen
 
       - uses: actions/configure-pages@v5
