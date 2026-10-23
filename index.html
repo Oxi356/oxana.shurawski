@@ -16,7 +16,7 @@
   --paper:#F7F2EB; --paper-2:#EFE6DB; --grid:#E6DCCF;
   --ink:#1F1A2E; --ink-2:#5D5468; --ink-3:#8A8094;
   --rust:#C2452B; --plum:#5B2A86; --coral:#F08A5D; --blush:#F4D9CC; --lilac:#D9CCEB;
-  --card:#FFFFFFB3; --line:#1F1A2E1F;
+  --card:#FFFFFFB3; --line:#1F1A2E1F; --on-wave:#FFFFFF;
   --display:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
   --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
   --body:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
@@ -26,12 +26,12 @@
   --paper:#16121D; --paper-2:#1F1928; --grid:#251E2F;
   --ink:#F5EEE6; --ink-2:#C8BDC9; --ink-3:#998DA0;
   --rust:#F0714D; --plum:#B58AE6; --coral:#F7A27D; --blush:#3A2430; --lilac:#2E2440;
-  --card:#FFFFFF0D; --line:#F5EEE624; color-scheme:dark}}
+  --card:#FFFFFF0D; --line:#F5EEE624; --on-wave:#16121D; color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#16121D; --paper-2:#1F1928; --grid:#251E2F;
   --ink:#F5EEE6; --ink-2:#C8BDC9; --ink-3:#998DA0;
   --rust:#F0714D; --plum:#B58AE6; --coral:#F7A27D; --blush:#3A2430; --lilac:#2E2440;
-  --card:#FFFFFF0D; --line:#F5EEE624; color-scheme:dark}
+  --card:#FFFFFF0D; --line:#F5EEE624; --on-wave:#16121D; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -233,6 +233,85 @@ section{padding-block:104px}
 .mail button{flex:none}
 @media (max-width:420px){.mail{font-size:15px;padding-left:16px}.mail span{overflow-wrap:normal;white-space:nowrap}.mail button{padding:9px 14px;font-size:14px}}
 .where{color:var(--ink-3);font-size:15px}
+
+
+/* tools: orbit (B) + sorted cards (C); tools burst out on scroll or hover */
+.tk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px 40px;align-items:start}
+.tk-cap{margin:0 0 14px;font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--ink-3)}
+.tk-side{min-width:0;display:grid;gap:28px}
+.tk-side .tool.tk-langs{padding:22px 0 0}
+.tk-stage{border:1px solid var(--line);border-radius:28px;overflow:hidden;background:
+  radial-gradient(60% 55% at 50% 50%,color-mix(in srgb,var(--lilac) 55%,transparent),transparent 70%),
+  repeating-linear-gradient(0deg,transparent 0 31px,var(--grid) 31px 32px),
+  repeating-linear-gradient(90deg,transparent 0 31px,var(--grid) 31px 32px),var(--paper)}
+.tk-hint{margin:10px 4px 0;min-height:1.6em;font-size:14.5px;color:var(--ink-2)}
+.tk-hint b{color:var(--rust);font-weight:500}
+.tk-orbit{position:relative;width:min(100%,400px);aspect-ratio:1;margin-inline:auto;container-type:inline-size}
+.tk-track{position:absolute;left:50%;top:50%;width:calc(var(--k)*100cqw);aspect-ratio:1;translate:-50% -50%;border:1.5px dashed color-mix(in srgb,var(--plum) 28%,transparent);border-radius:50%;transition:width .6s cubic-bezier(.3,1.45,.55,1)}
+.tk-track span{position:absolute;left:50%;top:0;translate:-50% -50%;padding:0 8px;background:var(--paper);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.tk-orbit.wide .tk-track{width:calc(var(--k)*104cqw)}
+.tk-core{position:absolute;left:50%;top:50%;translate:-50% -50%;width:25cqw;aspect-ratio:1;border-radius:50%;background:var(--wave);color:var(--on-wave);display:grid;place-content:center;z-index:2;box-shadow:0 18px 50px -18px var(--rust);animation:tk-breathe 4s ease-in-out infinite}
+.tk-core b{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(24px,7cqw,40px);line-height:1}
+@keyframes tk-breathe{50%{scale:1.05}}
+@keyframes tk-spin{to{rotate:360deg}}
+.tk-ring{position:absolute;inset:0;animation:tk-spin var(--dur) linear infinite}
+.tk-ring.rev{animation-direction:reverse}
+.tk-orb{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotate(var(--a)) translateX(0px) rotate(calc(-1*var(--a)));transition:transform 1.05s cubic-bezier(.3,1.45,.55,1) var(--d,0ms)}
+.tk-orbit.burst .tk-orb{transform:rotate(var(--a)) translateX(calc(var(--k)*50cqw)) rotate(calc(-1*var(--a)))}
+.tk-orbit.burst.wide .tk-orb{transform:rotate(var(--a)) translateX(calc(var(--k)*52cqw)) rotate(calc(-1*var(--a)))}
+.tk-fix{position:absolute;animation:tk-spin var(--dur) linear infinite reverse}
+.tk-ring.rev .tk-fix{animation-direction:normal}
+.tk-orbit:hover .tk-ring,.tk-orbit:hover .tk-fix{animation-play-state:paused}
+.tk-ic{position:absolute;translate:-50% -50%;width:clamp(34px,9.5cqw,44px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid color-mix(in srgb,var(--rust) 30%,var(--line));color:var(--rust);cursor:default;transition:scale .25s,background .25s,color .25s}
+.tk-ic svg{width:52%;height:52%}
+.tk-ic small{position:absolute;top:100%;left:50%;translate:-50% 0;margin-top:3px;font-size:clamp(9.5px,2.3cqw,11.5px);font-weight:500;color:var(--ink-2);white-space:nowrap}
+.tk-ic:hover,.tk-ic.on{scale:1.2;background:var(--rust);color:var(--paper)}
+.tk-orb.g1 .tk-ic{background:var(--rust);color:var(--paper);border-color:var(--rust)}
+.tk-ranks{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 18px}
+.tk-rank{min-width:0}
+.tk-rank h3{margin:0 0 10px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--ink-3)}
+.tk-stack{display:flex;flex-wrap:wrap;gap:7px}
+.tk-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:500;position:relative;z-index:1;
+  transform:translate(var(--fx,0px),var(--fy,0px)) rotate(var(--fr,0deg));transition:transform 1s cubic-bezier(.3,1.4,.55,1) var(--d,0ms)}
+.tk-ranks.burst .tk-chip{transform:none}
+.tk-chip.hot{border-color:color-mix(in srgb,var(--rust) 50%,transparent);color:var(--rust)}
+.tk-rank:hover .tk-chip{animation:tk-hop .5s ease-out calc(var(--i)*55ms)}
+@keyframes tk-hop{35%{translate:0 -6px}70%{translate:0 1px}100%{translate:0 0}}
+@media (max-width:900px){.tk{grid-template-columns:1fr}}
+@media (max-width:560px){.tk-ranks{grid-template-columns:1fr;gap:18px}.tk-chip{font-size:13.5px;padding:5px 9px}}
+@media (prefers-reduced-motion:reduce){.tk-orb,.tk-chip,.tk-track{transition:none!important}.tk-ring,.tk-fix,.tk-core,.tk-rank:hover .tk-chip{animation:none!important}}
+/* consent checkbox + privacy note */
+.consent{display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px;align-items:start;padding:14px 16px;border-radius:14px;background:var(--paper);border:1px solid var(--line);font-size:14.5px;line-height:1.5;color:var(--ink-2);cursor:pointer}
+.consent.bad{border-color:var(--rust);box-shadow:0 0 0 3px color-mix(in srgb,var(--rust) 15%,transparent)}
+.consent input{appearance:none;margin:1px 0 0;width:22px;height:22px;border-radius:7px;border:1.5px solid var(--ink-3);background:var(--paper);display:grid;place-items:center;cursor:pointer}
+.consent input:checked{background:var(--rust);border-color:var(--rust)}
+.consent input:checked::after{content:"";width:10px;height:6px;border:2px solid var(--paper);border-top:0;border-right:0;rotate:-45deg;translate:0 -1px}
+.consent a{color:var(--rust)}
+.consent i.req{font-style:normal;color:var(--rust)}
+details.dsh{max-width:760px;margin-top:22px;border-top:1px solid var(--line);padding-top:14px}
+details.dsh summary{cursor:pointer;font-weight:500;color:var(--ink-2);font-size:15px}
+details.dsh .dsh-body{margin-top:12px;display:grid;gap:10px;font-size:14.5px;color:var(--ink-2);max-width:70ch}
+details.dsh .dsh-body b{color:var(--ink);font-weight:500}
+
+/* contact form: sends name, email and request to the n8n webhook */
+.cform{margin-top:36px;max-width:760px;padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cform .full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field span{font-size:13px;letter-spacing:.06em;font-weight:500;color:var(--ink-2)}
+.field span i{font-style:normal;color:var(--rust)}
+.field input,.field textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;transition:border-color .2s,box-shadow .2s}
+.field textarea{min-height:130px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--rust);box-shadow:0 0 0 3px color-mix(in srgb,var(--rust) 15%,transparent)}
+.cform .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cform-foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.cform-foot .cta{padding:12px 22px}
+.cform-foot .cta[disabled]{opacity:.6;cursor:wait}
+.cform-msg{font-size:15px;color:var(--ink-2)}
+.cform-msg.ok{color:var(--plum)}
+.cform-msg.err{color:var(--rust)}
+.c-alt{margin-top:28px}
+.c-alt .label{margin-bottom:12px}
+@media (max-width:640px){.cform{grid-template-columns:1fr;padding:20px}}
 footer{border-top:1px solid var(--line)}
 footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-block:24px;font-size:14px;color:var(--ink-3)}
 
@@ -287,9 +366,9 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
 .js .rv.pre{opacity:.001;transform:translateY(22px)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.js .rv.pre{opacity:1;transform:none}html{scroll-behavior:auto}}
 </style>
-
 </head>
 <body>
+
 <nav>
   <div class="wrap">
     <a class="mark" href="#top" aria-label="Zum Anfang">
@@ -537,29 +616,42 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
   </div>
 </section>
 
-<section style="padding-top:0">
+<section id="tools" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head rv">
       <div class="label" data-en="Toolbox">Werkzeugkasten</div>
       <div><h2 data-en="What I &lt;span class=&quot;serif&quot;&gt;work with.&lt;/span&gt;">Womit ich <span class="serif">arbeite.</span></h2></div>
     </div>
-    <div class="tools">
-      <div class="tool rv">
-        <h3 data-en="Sales &amp;amp; Organisation">Vertrieb &amp; Organisation</h3>
-        <div class="chips"><span class="hot">B2B</span><span class="hot" data-en="Cold &amp;amp; warm outreach">Kalt- &amp; Warmakquise</span><span data-en="Contract negotiation">Vertragsverhandlung</span><span data-en="Stakeholder management">Stakeholdermanagement</span><span data-en="Project management">Projektmanagement</span><span>HubSpot</span><span>Personio</span><span>JOIN</span><span>Leapsome</span><span>Jira</span><span>Confluence</span><span>Notion</span><span>YouTrack</span><span>Trello</span><span>Slack</span><span>Google Workspace</span></div>
+    <div class="tk">
+      <div>
+        <h3 class="tk-cap" data-en="AI &amp;amp; automation">KI &amp; Automation</h3>
+        <div class="tk-stage" style="padding:clamp(28px,5vw,44px)">
+          <div class="tk-orbit" id="tk-orbit">
+            <div class="tk-track" style="--k:.48"><span data-en="often">oft</span></div>
+            <div class="tk-track" style="--k:.72"><span data-en="regularly">regelmäßig</span></div>
+            <div class="tk-track" style="--k:.95"><span data-en="in projects">in Projekten</span></div>
+            <div class="tk-core"><b>Claude</b></div>
+          </div>
+        </div>
+        <p class="tk-hint" id="tk-hint" data-en="Hover over an icon or tap it.">Fahr über ein Icon oder tipp es an.</p>
       </div>
-      <div class="tool rv">
-        <h3 data-en="AI tools">KI-Werkzeuge</h3>
-        <div class="chips"><span class="hot">Claude</span><span class="hot">Gemini / Nano Banana</span><span>Perplexity</span><span>Gamma</span><span data-en="Image &amp; video: Higgsfield, fal.ai">Bild &amp; Video: Higgsfield, fal.ai</span><span>Prompt Engineering</span><span>AI Agents</span><span data-en="No-code automation">No-Code-Automation</span></div>
-      </div>
-      <div class="tool rv">
-        <h3 data-en="Languages">Sprachen</h3>
-        <div class="langs">
-          <div class="lang"><span data-en="German">Deutsch</span><div class="bar"><i style="width:100%"></i></div><em data-en="Native">Mutter&shy;sprache</em></div>
-          <div class="lang"><span data-en="English">Englisch</span><div class="bar"><i style="width:96%"></i></div><em>C2</em></div>
-          <div class="lang"><span data-en="Russian">Russisch</span><div class="bar"><i style="width:82%"></i></div><em>C1</em></div>
-          <div class="lang"><span data-en="Spanish">Spanisch</span><div class="bar"><i style="width:28%"></i></div><em>A</em></div>
-          <div class="lang"><span data-en="Swedish">Schwedisch</span><div class="bar"><i style="width:22%"></i></div><em>A</em></div>
+      <div class="tk-side">
+        <h3 class="tk-cap" data-en="From my jobs">Aus dem Job</h3>
+        <div class="tk-ranks" id="tk-ranks">
+          <div class="tk-rank"><h3 data-en="Sales &amp;amp; CRM">Vertrieb &amp; CRM</h3><div class="tk-stack"><span class="tk-chip hot">B2B</span><span class="tk-chip hot" data-en="Cold &amp;amp; warm outreach">Kalt- &amp; Warmakquise</span><span class="tk-chip" data-en="Contract negotiation">Vertragsverhandlung</span><span class="tk-chip" data-en="Event organisation (online)">Event-Orga (online)</span></div></div>
+          <div class="tk-rank"><h3 data-en="HR &amp;amp; recruiting">HR &amp; Recruiting</h3><div class="tk-stack"><span class="tk-chip">Personio</span><span class="tk-chip">JOIN</span><span class="tk-chip">Leapsome</span></div></div>
+          <div class="tk-rank"><h3 data-en="Tools">Tools</h3><div class="tk-stack"><span class="tk-chip hot">Google Workspace</span><span class="tk-chip hot">HubSpot</span><span class="tk-chip hot">Confluence</span><span class="tk-chip hot">Slack</span><span class="tk-chip">Jira</span><span class="tk-chip">YouTrack</span><span class="tk-chip">Trello</span><span class="tk-chip">Notion</span></div></div>
+          <div class="tk-rank"><h3 data-en="Projects">Projekte</h3><div class="tk-stack"><span class="tk-chip" data-en="Project management">Projektmanagement</span><span class="tk-chip" data-en="Stakeholder management">Stakeholdermanagement</span></div></div>
+        </div>
+        <div class="tool tk-langs rv">
+          <h3 data-en="Languages">Sprachen</h3>
+          <div class="langs">
+            <div class="lang"><span data-en="German">Deutsch</span><div class="bar"><i style="width:100%"></i></div><em data-en="Native">Mutter&shy;sprache</em></div>
+            <div class="lang"><span data-en="English">Englisch</span><div class="bar"><i style="width:96%"></i></div><em>C2</em></div>
+            <div class="lang"><span data-en="Russian">Russisch</span><div class="bar"><i style="width:82%"></i></div><em>C1</em></div>
+            <div class="lang"><span data-en="Spanish">Spanisch</span><div class="bar"><i style="width:28%"></i></div><em>A</em></div>
+            <div class="lang"><span data-en="Swedish">Schwedisch</span><div class="bar"><i style="width:22%"></i></div><em>A</em></div>
+          </div>
         </div>
       </div>
     </div>
@@ -599,14 +691,39 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
     <div class="label" data-en="Contact">Kontakt</div>
     <h2 style="margin-top:18px" data-en="Let&#x27;s &lt;span class=&quot;serif&quot;&gt;talk.&lt;/span&gt;">Sprechen <span class="serif">wir.</span></h2>
     <p class="lead" data-en="I&#x27;m looking for a role where I build partnerships and bring AI into companies in a meaningful way. If that fits your team, I&#x27;d love to hear from you.">Ich suche eine Rolle, in der ich Partnerschaften aufbaue und KI sinnvoll in Unternehmen bringe. Wenn das zu Ihrem Team passt, freue ich mich auf eine Nachricht.</p>
-    <div class="c-row">
+    <form class="cform lab" id="cform" novalidate>
+      <label class="field"><span data-en="Name &lt;i&gt;*&lt;/i&gt;">Name <i>*</i></span><input name="name" type="text" autocomplete="name" required maxlength="120"></label>
+      <label class="field"><span data-en="Email &lt;i&gt;*&lt;/i&gt;">E-Mail <i>*</i></span><input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+      <label class="field full"><span data-en="Your message &lt;i&gt;*&lt;/i&gt;">Ihr Anliegen <i>*</i></span><textarea name="anliegen" required maxlength="3000"></textarea></label>
+      <label class="consent full" id="consent-box"><input id="f-consent" name="einwilligung" type="checkbox" required>
+        <span data-en="I agree that my details will be processed to answer my enquiry. See the &lt;a href=&quot;#datenschutz&quot;&gt;privacy note&lt;/a&gt;. I can withdraw my consent at any time by email. &lt;i class=&quot;req&quot;&gt;*&lt;/i&gt;">Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage verarbeitet werden. Mehr dazu im <a href="#datenschutz">Datenschutzhinweis</a>. Ich kann die Einwilligung jederzeit per E-Mail widerrufen. <i class="req">*</i></span></label>
+      <label class="hp" aria-hidden="true">Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+      <div class="cform-foot full">
+        <button class="cta" type="submit" id="cform-send" data-en="Send message">Nachricht senden</button>
+        <span class="cform-msg" id="cform-msg" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+    <details class="dsh" id="datenschutz">
+      <summary data-en="Privacy note">Datenschutzhinweis</summary>
+      <div class="dsh-body">
+        <p data-en="&lt;b&gt;Who:&lt;/b&gt; Oxana Shurawski, oshurawski@yahoo.de."><b>Wer:</b> Oxana Shurawski, oshurawski@yahoo.de.</p>
+        <p data-en="&lt;b&gt;What:&lt;/b&gt; Name, email and your message from the contact form, used only to answer your enquiry. Legal basis is your consent (Art. 6(1)(a) GDPR)."><b>Was:</b> Name, E-Mail und Ihre Nachricht aus dem Kontaktformular, nur zur Beantwortung Ihrer Anfrage. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).</p>
+        <p data-en="&lt;b&gt;Where it goes:&lt;/b&gt; The message passes through an automation service (n8n) to my inbox, is briefly summarised by an AI model (Anthropic Claude) for sorting and stored in a database (Supabase). You receive an automatic confirmation email."><b>Wohin:</b> Die Nachricht läuft über einen Automatisierungsdienst (n8n) in mein Postfach, wird zur Sortierung kurz von einem KI-Modell (Anthropic Claude) zusammengefasst und in einer Datenbank (Supabase) gespeichert. Sie erhalten eine automatische Eingangsbestätigung.</p>
+        <p data-en="&lt;b&gt;How long:&lt;/b&gt; Until your enquiry is settled, at the latest 6 months."><b>Wie lange:</b> Bis Ihre Anfrage erledigt ist, spätestens 6 Monate.</p>
+        <p data-en="&lt;b&gt;Website:&lt;/b&gt; Hosted on GitHub Pages, which processes technically necessary server logs including your IP address. Fonts are loaded from Google Fonts, so your IP address is sent to Google. No cookies, no tracking."><b>Webseite:</b> Gehostet bei GitHub Pages, dabei werden technisch nötige Server-Logs mit Ihrer IP-Adresse verarbeitet. Schriften werden von Google Fonts geladen, dabei geht Ihre IP-Adresse an Google. Keine Cookies, kein Tracking.</p>
+        <p data-en="&lt;b&gt;Your rights:&lt;/b&gt; Access, correction, deletion, withdrawal of consent and complaint to a data protection authority."><b>Ihre Rechte:</b> Auskunft, Berichtigung, Löschung, Widerruf der Einwilligung und Beschwerde bei einer Datenschutzbehörde.</p>
+      </div>
+    </details>
+    <div class="c-alt label" data-en="Or directly by email">Oder direkt per E-Mail</div>
+    <div class="c-row" style="margin-top:0">
       <div class="mail"><span id="addr">oshurawski@yahoo.de</span><button class="cta" id="copy" type="button" data-en="Copy email">E-Mail kopieren</button></div>
       <span class="where" data-en="Open to Cologne, Düsseldorf, Dortmund, Essen &amp;amp; remote">Offen für Köln, Düsseldorf, Dortmund, Essen &amp; remote</span>
     </div>
   </div>
 </section>
-<footer><div class="wrap"><span>© 2026 Oxana Shurawski</span><span>Human first. AI next.</span></div></footer>
+<footer><div class="wrap"><span>© 2026 Oxana Shurawski</span><span><a href="#datenschutz" data-en="Privacy">Datenschutz</a> · Human first. AI next.</span></div></footer>
 
+<script src="config.js"></script>
 <script>
 document.documentElement.classList.add('js');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -627,6 +744,86 @@ lines(document.getElementById('numwave'),1200,160,8,70,22,'var(--coral)',.8);
 /* reveal on scroll, starting from visible */
 const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('pre');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'}):null;
 if(io&&!reduce){document.querySelectorAll('.rv').forEach(el=>{const r=el.getBoundingClientRect();if(r.top>innerHeight){el.classList.add('pre');io.observe(el)}})}
+
+
+/* toolbox: AI tools orbit around Claude (g = how often: 0 daily … 4 tested in projects); job tools sort themselves out of a pile */
+(()=>{
+const IC={
+  perplexity:'<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l6 6"/>',
+  chatgpt:'<path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z"/><circle cx="12" cy="12" r="3"/>',
+  gemini:'<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+  prompt:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 10.5h5"/>',
+  mistral:'<path d="M4 19V5l8 8 8-8v14"/>',
+  n8n:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 11l3-3.5M7 13l3 3.5M14 7.5l3 3.5M14 16.5l3-3.5"/>',
+  github:'<circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10M18 9c0 5-12 3-12 8"/>',
+  api:'<path d="M9 4c-3 0-3 2-3 4s-1 4-3 4c2 0 3 2 3 4s0 4 3 4M15 4c3 0 3 2 3 4s1 4 3 4c-2 0-3 2-3 4s0 4-3 4"/>',
+  supabase:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>',
+  make:'<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4"/>',
+  gamma:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/>',
+  higgsfield:'<rect x="3" y="7" width="12" height="10" rx="2"/><path d="M15 11l6-3v8l-6-3"/>',
+  fal:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 18l6-5 4 3 3-2 5 4"/>',
+  netlify:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
+};
+const H={de:['täglich','fast täglich','mehrmals pro Woche','regelmäßig','in Projekten'],en:['daily','almost daily','several times a week','regularly','in projects']};
+const TOOLS=[
+  {n:'Claude',g:0,de:'Texte, Code, Agenten und diese ganze Seite',en:'Writing, code, agents and this whole site'},
+  {n:'Perplexity',g:1,i:'perplexity',de:'Recherche mit Quellen',en:'Research with sources'},
+  {n:'ChatGPT',g:2,i:'chatgpt',de:'Zweite Meinung, Ideen und Texte',en:'Second opinion, ideas and copy'},
+  {n:'Gemini',g:2,i:'gemini',de:'Recherche und Bilder mit Nano Banana',en:'Research and images with Nano Banana'},
+  {n:'Prompt Engineering',s:'Prompting',g:2,i:'prompt',de:'Gute Anweisungen für jedes KI-Tool',en:'Clear instructions for any AI tool'},
+  {n:'Mistral',g:3,i:'mistral',de:'Europäisches KI-Modell als Alternative',en:'European AI model as an alternative'},
+  {n:'n8n',g:3,i:'n8n',de:'KI-Lead-Pipeline fürs Kontaktformular',en:'AI lead pipeline for the contact form'},
+  {n:'GitHub',g:3,i:'github',de:'Pages und Actions, holt täglich die KI-News',en:'Pages and Actions, fetches the AI news daily'},
+  {n:'APIs',g:3,i:'api',de:'NYT-Schnittstelle und Webhooks',en:'NYT API and webhooks'},
+  {n:'Supabase',g:4,i:'supabase',de:'Mini-CRM für Anfragen',en:'Mini CRM for enquiries'},
+  {n:'Make',g:4,i:'make',de:'Kontakt-Automation, kostenlose Alternative zu n8n',en:'Contact automation, free alternative to n8n'},
+  {n:'Gamma',g:4,i:'gamma',de:'Präsentationen mit KI',en:'Presentations with AI'},
+  {n:'Higgsfield',g:4,i:'higgsfield',de:'KI-Video',en:'AI video'},
+  {n:'Netlify',g:4,i:'netlify',de:'Hosting für mein Projekt Hiesig',en:'Hosting for my project Hiesig'},
+  {n:'fal.ai',g:4,i:'fal',de:'Bildmodelle ausprobieren',en:'Trying out image models'}
+];
+const L=()=>document.documentElement.lang==='en'?'en':'de';
+const rnd=a=>(Math.random()-.5)*a;
+const hint=document.getElementById('tk-hint');
+const tell=t=>{const l=L();hint.innerHTML='<b>'+t.n+'</b> · '+H[l][t.g]+' · '+t[l]};
+function hoverable(node,t){
+  const on=()=>{node.classList.add('on');tell(t)};
+  node.addEventListener('pointerenter',on);node.addEventListener('pointerleave',()=>node.classList.remove('on'));
+  node.addEventListener('click',()=>{document.querySelectorAll('.tk-ic.on').forEach(e=>e!==node&&e.classList.remove('on'));on()});
+}
+
+/* orbit: Claude in the core, Perplexity highlighted on the first ring */
+const orbit=document.getElementById('tk-orbit');
+[[2,.48,'70s',''],[3,.72,'100s','rev'],[4,.95,'140s','']].forEach(([g,k,dur,dir],ri)=>{
+  const set=TOOLS.filter(t=>t.g===g||(g===2&&t.g===1));
+  const ring=document.createElement('div');ring.className='tk-ring '+dir;ring.style.setProperty('--dur',dur);
+  set.forEach((t,i)=>{const o=document.createElement('div');o.className='tk-orb g'+t.g;
+    o.style.setProperty('--a',(i*360/set.length+ri*25)+'deg');o.style.setProperty('--k',k);o.style.setProperty('--d',(ri*140+i*60)+'ms');
+    o.innerHTML='<div class="tk-fix" style="--dur:'+dur+'"><div class="tk-ic" tabindex="0" aria-label="'+t.n+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[t.i]+'</svg><small>'+(t.s||t.n)+'</small></div></div>';
+    ring.appendChild(o);hoverable(o.querySelector('.tk-ic'),t);});
+  orbit.appendChild(ring);
+});
+orbit.addEventListener('pointerenter',()=>orbit.classList.add('burst','wide'));
+orbit.addEventListener('pointerleave',()=>orbit.classList.remove('wide'));
+orbit.querySelector('.tk-core').addEventListener('click',()=>tell(TOOLS[0]));
+
+/* job tools: start as a pile in the middle, then fly into their group */
+const ranks=document.getElementById('tk-ranks'),chips=[...ranks.querySelectorAll('.tk-chip')];
+ranks.querySelectorAll('.tk-stack').forEach(st=>[...st.children].forEach((c,i)=>c.style.setProperty('--i',i)));
+function pile(){
+  const cx=ranks.clientWidth/2,cy=ranks.clientHeight/2;
+  chips.forEach((c,i)=>{let x=0,y=0,e=c;while(e&&e!==ranks){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent;}
+    c.style.setProperty('--fx',(cx-x-c.offsetWidth/2+rnd(40))+'px');c.style.setProperty('--fy',(cy-y-c.offsetHeight/2+rnd(30))+'px');
+    c.style.setProperty('--fr',rnd(60)+'deg');c.style.setProperty('--d',(i*45)+'ms');});
+}
+
+/* burst when scrolled into view, regroup once fully out of view */
+const watch=el=>new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting&&e.intersectionRatio>=.35)el.classList.add('burst');
+  else if(!e.isIntersecting){el.classList.remove('burst');if(el===ranks)pile();}}),{threshold:[0,.35]}).observe(el);
+document.fonts.ready.then(()=>{pile();watch(orbit);watch(ranks);});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(!ranks.classList.contains('burst'))pile();},150);});
+})();
 
 
 /* language toggle DE / EN */
@@ -667,6 +864,34 @@ fetch('data/news.json').then(r=>r.ok?r.json():Promise.reject()).then(items=>{
   show(0,true);
 }).catch(()=>{});
 
+/* contact form -> n8n webhook; the URL comes from config.js, which make-config.ps1 writes from the .env */
+const N8N_WEBHOOK=window.N8N_WEBHOOK||'';
+const form=document.getElementById('cform'),msg=document.getElementById('cform-msg'),send=document.getElementById('cform-send');
+const T={de:{consent:'Bitte setzen Sie das Häkchen zur Datenverarbeitung, sonst kann ich nicht antworten.',miss:'Bitte füllen Sie Name, E-Mail und Anliegen aus.',mail:'Bitte prüfen Sie Ihre E-Mail-Adresse.',wait:'Wird gesendet …',ok:'Danke! Ihre Nachricht ist angekommen. Ich melde mich bald.',err:'Das hat leider nicht geklappt. Schreiben Sie mir gern direkt per E-Mail.'},
+  en:{consent:'Please tick the consent box so I can reply.',miss:'Please fill in your name, email and message.',mail:'Please check your email address.',wait:'Sending …',ok:'Thank you! Your message has arrived. I will get back to you soon.',err:'Sorry, that did not work. Feel free to email me directly.'}};
+const say=(k,c)=>{msg.textContent=T[lang][k];msg.className='cform-msg'+(c?' '+c:'')};
+form.addEventListener('submit',e=>{
+  e.preventDefault();
+  const f=Object.fromEntries(new FormData(form));
+  if(f.website)return;                       // spam bots fill the hidden field
+  const name=f.name.trim(),email=f.email.trim(),anliegen=f.anliegen.trim();
+  if(!name||!email||!anliegen){say('miss','err');form.querySelector(!name?'[name=name]':!email?'[name=email]':'[name=anliegen]').focus();return}
+  if(!form.elements.email.checkValidity()){say('mail','err');form.elements.email.focus();return}
+  const cbox=document.getElementById('consent-box');
+  if(!form.elements.einwilligung.checked){cbox.classList.add('bad');say('consent','err');form.elements.einwilligung.focus();return}
+  cbox.classList.remove('bad');
+  if(!N8N_WEBHOOK){say('err','err');console.warn('config.js fehlt: make-config.ps1 ausfuehren');return}
+  send.disabled=true;say('wait');
+  // form-encoded body: n8n reads it as JSON fields, and the browser needs no CORS preflight
+  fetch(N8N_WEBHOOK,{method:'POST',body:new URLSearchParams({name,email,anliegen,sprache:lang,seite:location.href,zeit:new Date().toISOString()})})
+    .then(r=>{if(!r.ok)throw 0;form.reset();say('ok','ok')})
+    .catch(()=>say('err','err'))
+    .finally(()=>{send.disabled=false});
+});
+
+/* links to the privacy note open it */
+document.querySelectorAll('a[href="#datenschutz"]').forEach(x=>x.addEventListener('click',()=>{document.getElementById('datenschutz').open=true}));
+
 /* copy email */
 const btn=document.getElementById('copy');
 btn.addEventListener('click',()=>{const a=document.getElementById('addr').textContent;
@@ -675,6 +900,7 @@ btn.addEventListener('click',()=>{const a=document.getElementById('addr').textCo
   const sel=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById('addr'));const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent=L()[2]};
   try{navigator.clipboard.writeText(a).then(done,sel)}catch(e){sel()}});
 </script>
+
 
 </body>
 </html>

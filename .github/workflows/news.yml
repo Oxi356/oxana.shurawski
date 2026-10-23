@@ -1,4 +1,4 @@
-# Holt jeden Tag zweimal neue KI-News und veröffentlicht die Website neu.
+# Holt jeden Tag zweimal neue KI-News, trägt die Formular-Adresse ein und veröffentlicht die Website neu.
 name: KI-News aktualisieren
 
 on:
@@ -33,6 +33,13 @@ jobs:
           NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
         run: ./news-widget/fetch-news.ps1
         continue-on-error: true   # klappt die NYT mal nicht, bleiben die letzten News stehen
+
+      - name: Formular-Adresse eintragen
+        shell: pwsh
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
+        run: '& "./kontaktformular n8n/make-config.ps1"'
+        continue-on-error: true   # ohne Secret bleibt das Formular stumm, die Seite geht trotzdem online
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
