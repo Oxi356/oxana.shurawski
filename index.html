@@ -345,9 +345,11 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
 @media (max-width:900px){.proj-grid{grid-template-columns:1fr}}
 
 /* news inside project card 01: one headline at a time, slow fade */
-.news-name{display:flex;align-items:center;gap:10px}
-.news-name svg{flex:none;color:var(--rust)}
-.news-name .nyt{font-family:var(--serif);font-size:1.15em;letter-spacing:.02em}
+.proj-meta{display:flex;align-items:center;gap:10px;min-width:0}
+.proj-src{display:inline-flex;align-items:center;gap:6px;font-family:var(--serif);font-size:16px;color:var(--ink-2);white-space:nowrap}
+.proj-src svg{flex:none;color:var(--rust)}
+.news-nav{flex:none;display:grid;place-items:center;width:28px;height:28px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);font:500 15px/1 var(--body);cursor:pointer;transition:color .2s,border-color .2s}
+.news-nav:hover{color:var(--rust);border-color:var(--rust)}
 .news-card{min-height:142px;transition:opacity .9s ease}
 .news-card.fade{opacity:0}
 .news-card time{font-size:12px;color:var(--rust);letter-spacing:.06em;font-variant-numeric:tabular-nums}
@@ -492,11 +494,11 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
     </div>
     <div class="proj-grid">
       <div class="proj lab rv" id="news">
-        <div class="proj-top"><span class="proj-no">01</span><span class="chip live"><i aria-hidden="true"></i>live</span></div>
-        <h4 class="news-name"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h13v13a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2Z"/><path d="M17 9h3v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 12.5h7M7 16h4"/></svg><span><span class="nyt">New York Times</span> <span data-en="AI News API">KI-News API</span></span></h4>
+        <div class="proj-top"><span class="proj-no">01</span><span class="proj-meta"><span class="proj-src"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h13v13a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2Z"/><path d="M17 9h3v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 12.5h7M7 16h4"/></svg>New York Times</span><span class="chip live"><i aria-hidden="true"></i>live</span></span></div>
+        <h4 data-en="AI News API">KI-News API</h4>
         <p class="news-about" data-en="Fresh AI headlines from The New York Times, fetched via API. The key stays safe in an .env file.">Aktuelle KI-Schlagzeilen der New York Times, per API geholt. Der Schlüssel bleibt sicher in einer .env-Datei.</p>
         <div class="news-card" id="news-card" aria-live="polite" hidden></div>
-        <div class="news-foot" id="news-foot" hidden><span class="news-bar" aria-hidden="true"><i id="news-bar"></i></span><span class="news-count" id="news-count"></span></div>
+        <div class="news-foot" id="news-foot" hidden><span class="news-bar" aria-hidden="true"><i id="news-bar"></i></span><button class="news-nav" id="news-prev" type="button" aria-label="Vorherige Schlagzeile">&#8249;</button><span class="news-count" id="news-count"></span><button class="news-nav" id="news-next" type="button" aria-label="Nächste Schlagzeile">&#8250;</button></div>
         <div class="tags"><span>New York Times API</span><span>.env</span><span>PowerShell</span></div>
       </div>
       <div class="proj lab soon rv">
@@ -846,19 +848,22 @@ if(location.hash==='#en')start='en';
 if(start==='en')setLang('en');
 
 
-/* news in project card 01: reads data/news.json (created by fetch-news.ps1 with the NYT API), next headline every 10 s */
-fetch('data/news.json').then(r=>r.ok?r.json():Promise.reject()).then(items=>{
+/* news in project card 01: reads data/news.json (created by fetch-news.ps1 with the NYT API), next headline every 10 s or on click.
+   no-store + timestamp, so a visitor never gets yesterday's headlines from the browser cache */
+fetch('data/news.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(items=>{
   if(!Array.isArray(items)||!items.length)return;
   const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const card=document.getElementById('news-card'),bar=document.getElementById('news-bar'),count=document.getElementById('news-count');
-  let at=0;
+  let at=0,turn=0;
   const show=(n,instant)=>{
-    at=n%items.length;const it=items[at];
-    const paint=()=>{card.innerHTML='<time>'+esc(it.date)+'</time><a class="news-title" href="'+esc(it.url)+'" target="_blank" rel="noopener">'+esc(it.title)+' &#8599;</a>'+(it.summary?'<p>'+esc(it.summary)+'</p>':'');card.classList.remove('fade');count.textContent=(at+1)+' / '+items.length};
+    at=((n%items.length)+items.length)%items.length;const it=items[at],me=++turn;
+    const paint=()=>{if(me!==turn)return;card.innerHTML='<time>'+esc(it.date)+'</time><a class="news-title" href="'+esc(it.url)+'" target="_blank" rel="noopener">'+esc(it.title)+' &#8599;</a>'+(it.summary?'<p>'+esc(it.summary)+'</p>':'');card.classList.remove('fade');count.textContent=(at+1)+' / '+items.length};
     if(instant)paint();else{card.classList.add('fade');setTimeout(paint,900)}
     bar.classList.remove('run');void bar.offsetWidth;bar.classList.add('run');
   };
   bar.addEventListener('animationend',()=>show(at+1));
+  document.getElementById('news-prev').addEventListener('click',()=>show(at-1));
+  document.getElementById('news-next').addEventListener('click',()=>show(at+1));
   document.querySelector('#news .news-about').hidden=true;
   card.hidden=false;document.getElementById('news-foot').hidden=false;
   show(0,true);
