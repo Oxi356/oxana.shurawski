@@ -348,8 +348,10 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
 .proj-meta{display:flex;align-items:center;gap:10px;min-width:0}
 .proj-src{display:inline-flex;align-items:center;gap:6px;font-family:var(--serif);font-size:16px;color:var(--ink-2);white-space:nowrap}
 .proj-src svg{flex:none;color:var(--rust)}
-.news-nav{flex:none;display:grid;place-items:center;width:28px;height:28px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);font:500 15px/1 var(--body);cursor:pointer;transition:color .2s,border-color .2s}
-.news-nav:hover{color:var(--rust);border-color:var(--rust)}
+/* the progress bar doubles as a "next headline" button with a comfortable tap area */
+.news-skip{flex:1;display:flex;align-items:center;min-height:28px;padding:0;border:0;background:none;cursor:pointer}
+.news-skip .news-bar{transition:height .2s}
+.news-skip:hover .news-bar{height:4px}
 .news-card{min-height:142px;transition:opacity .9s ease}
 .news-card.fade{opacity:0}
 .news-card time{font-size:12px;color:var(--rust);letter-spacing:.06em;font-variant-numeric:tabular-nums}
@@ -498,7 +500,7 @@ a.proj:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px color-mix(i
         <h4 data-en="AI News API">KI-News API</h4>
         <p class="news-about" data-en="Fresh AI headlines from The New York Times, fetched via API. The key stays safe in an .env file.">Aktuelle KI-Schlagzeilen der New York Times, per API geholt. Der Schlüssel bleibt sicher in einer .env-Datei.</p>
         <div class="news-card" id="news-card" aria-live="polite" hidden></div>
-        <div class="news-foot" id="news-foot" hidden><span class="news-bar" aria-hidden="true"><i id="news-bar"></i></span><button class="news-nav" id="news-prev" type="button" aria-label="Vorherige Schlagzeile">&#8249;</button><span class="news-count" id="news-count"></span><button class="news-nav" id="news-next" type="button" aria-label="Nächste Schlagzeile">&#8250;</button></div>
+        <div class="news-foot" id="news-foot" hidden><button class="news-skip" id="news-next" type="button" aria-label="Nächste Schlagzeile" title="Nächste Schlagzeile"><span class="news-bar" aria-hidden="true"><i id="news-bar"></i></span></button><span class="news-count" id="news-count"></span></div>
         <div class="tags"><span>New York Times API</span><span>.env</span><span>PowerShell</span></div>
       </div>
       <div class="proj lab soon rv">
@@ -862,7 +864,6 @@ fetch('data/news.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():P
     bar.classList.remove('run');void bar.offsetWidth;bar.classList.add('run');
   };
   bar.addEventListener('animationend',()=>show(at+1));
-  document.getElementById('news-prev').addEventListener('click',()=>show(at-1));
   document.getElementById('news-next').addEventListener('click',()=>show(at+1));
   document.querySelector('#news .news-about').hidden=true;
   card.hidden=false;document.getElementById('news-foot').hidden=false;
